@@ -23,20 +23,30 @@ like; your site will live at `https://<you>.github.io/<that-name>/`.
 **Settings → Pages → Source: “GitHub Actions.”** (The first deploy also tries to enable
 this automatically, but setting it now avoids a first-run hiccup.)
 
-### 3. Register a GitHub OAuth App
-This lets the editor sign you in. **GitHub → Settings → Developer settings → OAuth Apps
-→ New OAuth App:**
-- **Homepage URL** and **Authorization callback URL:** `https://<you>.github.io/<repo>/admin/`
-  (exactly — trailing slash included).
-- Copy the **Client ID**; generate a **Client secret**.
+### 3. Register + install a GitHub App
+This lets the editor sign you in with least-privilege, per-repo access. **GitHub →
+Settings → Developer settings → GitHub Apps → New GitHub App:**
+- **Callback URL:** `https://<you>.github.io/<repo>/admin/` (exactly — trailing slash).
+- **Expire user authorization tokens:** checked (recommended).
+- **Webhook → Active:** unchecked (if the form demands a URL, put `https://example.com`).
+- **Where can this be installed?** Only on this account.
+- **Repository permissions:** **Contents: Read & write**, **Actions: Read & write**,
+  **Metadata: Read** (auto). Nothing else.
+- Create it, copy the **Client ID**, generate a **Client secret**, then **Install App**
+  on **this repo** (Only select repositories). The install is what grants repo access.
+
+> Prefer a classic **OAuth App**? It works too — register one with the same callback URL
+> and use the same secret names below; it just grants account-wide `repo` scope instead of
+> per-repo access. Full step-by-step + troubleshooting: **INSTALL.md** in the Timber repo.
 
 ### 4. Add secrets + variables
-In **your** repo → **Settings → Secrets and variables → Actions**:
+In **your** repo → **Settings → Secrets and variables → Actions** (the `GH_` prefix
+matters — GitHub forbids names starting with `GITHUB_`):
 
 | Kind | Name | Value |
 |---|---|---|
-| Variable | `GH_OAUTH_CLIENT_ID` | the OAuth App **client id** (public) |
-| Secret | `GH_OAUTH_CLIENT_SECRET` | the OAuth App **client secret** |
+| Variable | `GH_OAUTH_CLIENT_ID` | the App's **client id** (public) |
+| Secret | `GH_OAUTH_CLIENT_SECRET` | the App's **client secret** |
 | Secret | `CLOUDFLARE_API_TOKEN` | a Cloudflare token with **Workers Scripts: Edit** |
 | Secret | `CLOUDFLARE_ACCOUNT_ID` | your Cloudflare **account id** |
 
